@@ -3,7 +3,11 @@
 // pre paano ba mag-C?
 
 void fcfs(char *filename) {
-    int i, j, x, y, z;
+    // counters
+    int i, j;
+    
+    // input file
+    int x, y, z;
     FILE *fptr;
     fptr = fopen(filename, "r");
     fscanf(fptr, "%d %d %d", &x, &y, &z);
@@ -16,17 +20,39 @@ void fcfs(char *filename) {
 
     fclose(fptr);
 
-    // print the processes
+    // // print the processes delete after
+    // for(i = 0; i < y; i++) {
+    //     for(j = 0; j < 3; j++) {
+    //         if (j == 2) {
+    //             printf("%d\n", procie[i][j]);
+    //         }
+    //         else {
+    //             printf("%d ", procie[i][j]);
+    //         }
+    //     }
+    // }
+
+
+    // algo start
+    int start_time, end_time, waiting_time;
+    int sum_wait = 0;
+
+    start_time = procie[0][1];
+    end_time = start_time + procie[0][2];
+    waiting_time = procie[0][1];
     for(i = 0; i < y; i++) {
-        for(j = 0; j < 3; j++) {
-            if (j == 2) {
-                printf("%d\n", procie[i][j]);
-            }
-            else {
-                printf("%d ", procie[i][j]);
-            }
+        if(i > 0) {
+            start_time = end_time;
+            waiting_time = end_time - procie[i][1];
+            end_time = end_time + procie[i][2];
         }
+        printf("P[%d] Start Time: %d End Time: %d | Waiting Time: %d\n", procie[i][0], start_time, end_time, waiting_time);
+        sum_wait += waiting_time;
     }
+
+    float ave_wait = (sum_wait * 1.0) / (y * 1.0);
+
+    printf("Average Waiting Time: %0.1f\n", ave_wait);
 
     return;
 }
@@ -66,7 +92,7 @@ int main() {
     fscanf(ptr, "%d %d %d", &x, &y, &z);
     fclose(ptr);
 
-    printf("%d %d %d\n", x, y, z); // delete lol
+    // printf("%d %d %d\n", x, y, z); // delete lol
     switch(x) {
         case 0: fcfs(filename); break;
         case 1: sjf(filename); break;
