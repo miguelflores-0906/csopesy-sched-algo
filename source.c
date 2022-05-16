@@ -66,7 +66,84 @@ void srtf(char *filename) {
 }
 
 void rr(char *filename) {
-    int i, j, x, y, z;
+    // counters
+    int i, j;
+    
+    // input file
+    int x, y, z;
+    FILE *fptr;
+    fptr = fopen(filename, "r");
+    fscanf(fptr, "%d %d %d", &x, &y, &z);
+
+    int procie[y][3];
+
+    for(i = 0; i < y; i++) {
+        fscanf(fptr, "%d %d %d", &procie[i][0], &procie[i][1], &procie[i][2]);
+    }
+
+    fclose(fptr);
+
+    // copy burst times
+    int burst_times[y];
+
+    for (i = 0; i < y; i++) {
+        burst_times[i] = procie[i][2];
+    }
+
+    //  // show copied burst times
+    // for (i = 0; i < y; i++) {
+    //     printf("%d\n", burst_times[i]);
+    // }
+
+    float waiting_times[y];
+    int complete[y];
+    int total_procie = y;
+    int total_time = 0;
+    int start_time, end_time, waiting_time, turn_around_time;
+    int sum_wait = 0;
+    float ave_wait = 0;
+
+    for (i = 0; i < y; i++) {complete[i] = 0;}
+
+    while (total_procie) {
+        for (i = 0; i < y; i++) {
+            start_time = total_time;
+
+            if (burst_times[i]) {
+                if (burst_times[i] <= z) {
+                    end_time = total_time + burst_times[i];
+                    burst_times[i] = 0;
+                    total_time = end_time;
+                    complete[i] = total_time;
+                    total_procie--;
+                }
+                else {
+                    end_time = total_time + z;
+                    burst_times[i] -= z;
+                    total_time = end_time;
+
+                    printf("P[%d] Start Time: %d End Time: %d\n", procie[i][0], start_time, end_time);
+                }
+            }
+
+            if (complete[i]) {
+                turn_around_time = complete[i] - procie[i][1];
+                waiting_time = turn_around_time - procie[i][2];
+                ave_wait += waiting_time;
+
+                printf("P[%d] Start Time: %d End Time: %d | Waiting Time: %d\n", procie[i][0], start_time, end_time, waiting_time);
+
+                complete[i] = 0;
+            }
+        }
+    }
+
+    ave_wait = ave_wait / (y * 1.0);
+
+    printf("Average Waiting Time: %0.1f\n", ave_wait);
+
+    return;
+    
 }
 
 int main() {
